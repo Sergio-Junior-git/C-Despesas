@@ -1,0 +1,62 @@
+﻿@page "/"
+
+<PageTitle>Calculadora</PageTitle>
+
+@using System.Globalization
+
+<h3>Calculadora de Despesas</h3>
+
+<label>Salário:</label>
+<input @bind="salario" type="number" step="0.01" class="form-control" />
+
+<br />
+
+<label>Nome da Despesa:</label>
+<input @bind="nomeDespesa" class="form-control" />
+
+<label>Valor da Despesa:</label>
+<input @bind="valorDespesa" type="number" step="0.01" class="form-control" />
+
+<button class="btn btn-primary mt-2" @onclick="AdicionarDespesa">Adicionar</button>
+
+<hr />
+
+<h4>Resumo</h4>
+<p><strong>Total gasto:</strong> R$ @totalDespesas.ToString("F2", new CultureInfo("pt-BR"))</p>
+<p><strong>Saldo restante:</strong> R$ @( (salario - totalDespesas).ToString("F2", CultureInfo.InvariantCulture) )</p>
+
+<ul>
+    @foreach (var item in despesas)
+    {
+        <li>@item.Nome: R$ @item.Valor.ToString("F2", CultureInfo.InvariantCulture)</li>
+    }
+</ul>
+
+@code {
+    decimal salario = 0;
+    string nomeDespesa = "";
+    decimal valorDespesa = 0;
+
+    decimal totalDespesas = 0;
+
+    List<Despesa> despesas = new();
+
+    void AdicionarDespesa()
+    {
+        if (!string.IsNullOrWhiteSpace(nomeDespesa) && valorDespesa > 0)
+        {
+            despesas.Add(new Despesa { Nome = nomeDespesa, Valor = valorDespesa });
+            totalDespesas += valorDespesa;
+
+            // Limpar campos
+            nomeDespesa = "";
+            valorDespesa = 0;
+        }
+    }
+
+    class Despesa
+    {
+        public string Nome { get; set; }
+        public decimal Valor { get; set; }
+    }
+}
